@@ -1,0 +1,413 @@
+/* leerlingen.css */
+/* Licentie: Transparent Textures (https://www.transparenttextures.com/terms.php) - Gratis te gebruiken voor persoonlijke en commerciële projecten, met vermelding van bron. */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #e8ecef 0%, #ced4da 100%); /* Subtiel grijs gradient */
+    min-height: 100vh;
+    padding: 20px;
+    color: #212529; /* Donkergrijs voor tekst */
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+h2 {
+    text-align: center;
+    font-weight: 700;
+    font-size: 2.25rem;
+    margin: 40px 0 60px;
+    color: #343a40; /* Donkergrijs voor headings */
+    animation: fadeIn 0.5s ease-in;
+}
+
+h3 {
+    font-size: 1.75rem;
+    margin: 2rem 0 1rem;
+    font-weight: 600;
+    color: #343a40;
+    text-align: center;
+}
+
+/* Titel voor reserveringen-popup */
+.reserveringen-popup h4 {
+    font-size: 1.3em;
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #343a40;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+li {
+    background: #ffffff; /* Wit voor een schone look */
+    padding: 1.25rem;
+    margin: 1rem 0;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border-left: 4px solid #007bff; /* Blauwe accentlijn voor admin-gevoel */
+}
+
+li:hover {
+    transform: translateY(-0.1875rem);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+}
+
+li.niet-beschikbaar {
+    background: #ffffff;
+    color: #dc3545; /* Rood voor niet-beschikbaar */
+    font-weight: 700;
+    border-left: 4px solid #dc3545; /* Rode accentlijn */
+}
+
+.search-container {
+    max-width: 900px;
+    margin: 20px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    animation: fadeIn 0.5s ease-in;
+}
+
+#zoekbalk {
+    width: 100%;
+    max-width: 450px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    border: 1px solid #ced4da; /* Lichtgrijs */
+    border-radius: 8px;
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    font-size: 1.1rem;
+    background: #ffffff;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+#zoekbalk:focus {
+    border-color: #007bff; /* Blauw bij focus */
+    background: #ffffff;
+    box-shadow: 0 0 12px rgba(0, 123, 255, 0.3), inset 0 0 4px rgba(0, 0, 0, 0.05);
+    outline: none;
+    transform: scale(1.01);
+}
+
+#reserveringen-knop {
+    background: linear-gradient(45deg, #007bff, #0056b3); /* Blauwe gradient */
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    font-size: 1.15rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+}
+
+#reserveringen-knop:hover {
+    background: linear-gradient(45deg, #0056b3, #003d80); /* Donkerder blauw */
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+button, input[type="submit"] {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    font-size: 1.15rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+button:hover, input[type="submit"]:hover {
+    background: linear-gradient(45deg, #0056b3, #003d80);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.5s ease, height 0.5s ease;
+}
+
+button:hover::after {
+    width: 300%;
+    height: 300%;
+}
+
+li.niet-beschikbaar button, li.niet-beschikbaar input[type="submit"] {
+    background: linear-gradient(45deg, #dc3545, #a71d2a); /* Rode gradient */
+}
+
+li.niet-beschikbaar button:hover, li.niet-beschikbaar input[type="submit"]:hover {
+    background: linear-gradient(45deg, #a71d2a, #721317); /* Donkerder rood */
+}
+
+.melding {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 15px 20px;
+    width: 300px;
+    background-color: #ffffff;
+    color: #28a745; /* Groen voor succesmeldingen */
+    border-radius: 8px;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    font-size: 1.1em;
+    z-index: 111;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.melding.error {
+    color: #dc3545; /* Rood voor foutmeldingen */
+}
+
+.melding::before {
+    content: '✉';
+    margin-right: 10px;
+    font-size: 1.2em;
+}
+
+.overlay, #popup-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7); /* Donkergrijs overlay */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.overlay-content, #popup {
+    background: #ffffff; /* Schoon wit */
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+    width: 90%;
+    max-width: 480px;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: scaleIn 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.overlay input, .overlay input[type="date"] {
+    width: 100%;
+    padding: 12px 16px;
+    margin: 12px 0;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    font-size: 1.1rem;
+    background: #ffffff;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.overlay input:focus, .overlay input[type="date"]:focus {
+    border-color: #007bff;
+    background: #ffffff;
+    box-shadow: 0 0 12px rgba(0, 123, 255, 0.3), inset 0 0 4px rgba(0, 0, 0, 0.05);
+    outline: none;
+    transform: scale(1.01);
+}
+
+.overlay-content button, #popup button {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    font-size: 1.15rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.overlay-content button:hover, #popup button:hover {
+    background: linear-gradient(45deg, #0056b3, #003d80);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+#popup {
+    z-index: 1001;
+    text-align: center;
+    display: none;
+}
+
+#popup img {
+    max-width: 200px;
+    height: auto;
+    border-radius: 8px;
+    margin: 0 auto 15px;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+#popup img:hover {
+    transform: scale(1.05);
+}
+
+#popup button {
+    background: linear-gradient(45deg, #dc3545, #a71d2a); /* Rood voor sluiten */
+}
+
+#popup button:hover {
+    background: linear-gradient(45deg, #a71d2a, #721317);
+}
+
+#uitloggen {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    padding: 12px 24px;
+    background: linear-gradient(45deg, #6c757d, #495057); /* Grijs voor uitloggen */
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    font-size: 1.15rem;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+#uitloggen:hover {
+    background: linear-gradient(45deg, #495057, #343a40);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Verbeterde reserveringen-popup */
+.reserveringen-popup {
+    display: none;
+    position: fixed;
+    width: 350px;
+    max-height: 250px;
+    background: #ffffff;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    padding: 15px;
+    overflow-y: auto;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: scaleIn 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.reserveringen-popup ul {
+    margin: 0;
+    padding: 0;
+}
+
+.reserveringen-popup li {
+    background: none;
+    border: none;
+    padding: 8px 0;
+    margin: 5px 0;
+    box-shadow: none;
+    cursor: default;
+    font-size: 1em;
+    color: #212529;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.reserveringen-popup li button {
+    background: linear-gradient(45deg, #dc3545, #a71d2a);
+    padding: 5px 10px;
+    font-size: 0.9em;
+}
+
+.reserveringen-popup li button:hover {
+    background: linear-gradient(45deg, #a71d2a, #721317);
+}
+
+/* Animaties */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+    from { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
+    to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    h2 { font-size: 2em; margin: 30px 0 40px; }
+    h3 { font-size: 1.5em; }
+    li { padding: 1rem; margin: 0.75rem 0; }
+    #zoekbalk { max-width: 350px; }
+    #reserveringen-knop { padding: 10px 18px; }
+    button, input[type="submit"] { padding: 10px 18px; font-size: 1rem; }
+    .overlay-content, #popup { width: 85%; padding: 1.5rem; }
+    #popup img { max-width: 150px; }
+    .melding { width: 250px; }
+    #uitloggen { padding: 10px 18px; font-size: 1rem; }
+    .reserveringen-popup { width: 300px; }
+}
+
+@media (max-width: 480px) {
+    body { padding: 10px; }
+    h2 { font-size: 1.8em; margin: 20px 0 30px; }
+    h3 { font-size: 1.2em; }
+    li { padding: 0.75rem; font-size: 0.9em; }
+    .search-container { flex-direction: column; gap: 10px; }
+    #zoekbalk { max-width: 300px; padding: 10px 12px; font-size: 1rem; }
+    #reserveringen-knop { padding: 10px 18px; font-size: 1rem; }
+    button, input[type="submit"] { padding: 10px 18px; font-size: 0.85em; }
+    .overlay-content, #popup { width: 95%; padding: 1.5rem; max-width: 360px; }
+    #popup img { max-width: 120px; }
+    .melding { width: 200px; }
+    #uitloggen { padding: 10px 18px; font-size: 0.9em; }
+    .reserveringen-popup { width: 90%; max-height: 200px; }
+}

@@ -1,0 +1,242 @@
+<?php
+session_start();
+include("../database.php");
+
+if (!isset($_SESSION['gebruiker_id']) || $_SESSION['admin'] != 1) {
+    header("Location: ../inlogscherm/login.php");
+    exit();
+}
+
+$gebruiker_id = $_SESSION["gebruiker_id"];
+
+function logActie($conn, $actie, $reservering_id, $gebruiker_id) {
+    $stmt = $conn->prepare("INSERT INTO logs (actie, reservering_id, gebruiker_id, tijdstip) VALUES (?, ?, ?, NOW())");
+    $stmt->bind_param("sii", $actie, $reservering_id, $gebruiker_id);
+    $stmt->execute();
+}
+
+$boeken = $conn->query("SELECT * FROM boeken")->fetch_all(MYSQLI_ASSOC);
+
+$reserveringen = $conn->query(
+    "SELECT r.id, b.titel, u.naam, b.categorie, r.status, r.datum_reservering, r.datum_terug, r.verlenging_status, r.boek_id, r.gebruiker_id 
+    FROM reserveringen r 
+    JOIN boeken b ON r.boek_id = b.id 
+    JOIN users u ON r.gebruiker_id = u.id"
+)->fetch_all(MYSQLI_ASSOC);
+
+$verlengingsverzoeken = $conn->query(
+    "SELECT r.id, b.titel, u.naam, r.datum_terug FROM reserveringen r
+    JOIN boeken b ON r.boek_id = b.id
+    JOIN users u ON r.gebruiker_id = u.id
+    WHERE r.verlenging_status = 'in afwachting'"
+)->fetch_all(MYSQLI_ASSOC);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Voeg boek toe
+    if (isset($_POST['toevoegen'])) {
+        // Verkrijg formuliergegevens
+        $titel = $_POST['titel'];
+        $auteur = $_POST['auteur'];
+        $categorie = $_POST['categorie'];
+        $aantal_beschikbaar = $_POST['aantal_beschikbaar'];
+        $beschrijving = $_POST['beschrijving'];
+
+        // Verwerk afbeelding upload
+        $afbeelding = $_FILES['afbeelding'];
+        $afbeelding_naam = basename($afbeelding['name']);
+        $afbeelding_pad = "../images/" . $afbeelding_naam;
+
+        // Controleer of het een afbeelding is
+        if (getimagesize($afbeelding['tmp_name']) === false) {
+            echo "Het bestand is geen afbeelding.";
+            exit();
+        }
+
+        // Beperk bestandsgrootte (optioneel)
+        if ($afbeelding['size'] > 5000000) { // Max 5MB
+            echo "De afbeelding is te groot.";
+            exit();
+        }
+
+        // Verplaats bestand naar images map
+        if (move_uploaded_file($afbeelding['tmp_name'], $afbeelding_pad)) {
+            // Sla gegevens op in de database
+            $stmt = $conn->prepare("INSERT INTO boeken (titel, auteur, categorie, aantal_beschikbaar, beschrijving, afbeelding) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssss", $titel, $auteur, $categorie, $aantal_beschikbaar, $beschrijving, $afbeelding_naam);
+            $stmt->execute();
+        } else {
+            echo "Er is een fout opgetreden bij het uploaden van de afbeelding.";
+        }
+    }
+
+    // Overige acties (goedkeuren, afwijzen, etc.)
+    // ...
+
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
+}
+
+// Verwijder oude logs en reserveringen
+if (date('H:i') == '00:00') {
+    $conn->query("DELETE FROM logs WHERE tijdstip < NOW() - INTERVAL 1 DAY");
+    $conn->query("DELETE FROM reserveringen WHERE status = 'teruggebracht' AND datum_terug < NOW() - INTERVAL 1 DAY");
+}
+
+$logs = $conn->query("SELECT * FROM logs ORDER BY tijdstip DESC")->fetch_all(MYSQLI_ASSOC);
+?>
+
+
+
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>Beheerder - Schoolbibliotheek</title>
+    <link rel="stylesheet" href="bestuurder.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Beheer Schoolbibliotheek</h2>
+
+        <h3>Reserveringen Overzicht</h3>
+        <ul>
+            <?php foreach ($reserveringen as $res): ?>
+                <?php $teLaat = (strtotime($res['datum_terug']) < time() && $res['status'] == 'geleend'); ?>
+                <li>
+                    <span>
+                        Boek: <?= htmlspecialchars($res['titel']) ?> 
+                        - Gebruiker: <?= htmlspecialchars($res['naam']) ?> 
+                        - Categorie: <?= htmlspecialchars($res['categorie']) ?>
+                        - Uitleendatum: <?= htmlspecialchars($res['datum_reservering']) ?>
+                        - Terugbrengen vóór: <span class="<?= $teLaat ? 'te-laat' : '' ?>"><?= htmlspecialchars($res['datum_terug']) ?></span>
+                        - Status: <?= htmlspecialchars($res['status']) ?>
+                    </span>
+                    <?php if ($res['status'] == 'geleend'): ?>
+                        <form method="POST" style="display:inline;">
+                            <input type="hidden" name="reservering_id" value="<?= $res['id'] ?>">
+                            <input type="hidden" name="boek_id" value="<?= $res['boek_id'] ?>">
+                            <button type="submit" name="terugbrengen">Terugbrengen</button>
+                        </form>
+                    <?php endif; ?>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+
+        <h3>Verlengingsverzoeken</h3>
+        <ul>
+            <?php foreach ($verlengingsverzoeken as $verzoek): ?>
+                <li>
+                    <span>
+                        Boek: <?= htmlspecialchars($verzoek['titel']) ?> - 
+                        Gebruiker: <?= htmlspecialchars($verzoek['naam']) ?> - 
+                        Gewenste verlengingsdatum: <?= htmlspecialchars($verzoek['datum_terug']) ?>
+                    </span>
+                    <form method="POST" style="display:inline;">
+                        <input type="hidden" name="reservering_id" value="<?= $verzoek['id'] ?>">
+                        <input type="hidden" name="datum_terug" value="<?= htmlspecialchars($verzoek['datum_terug']) ?>">
+                        <button type="submit" name="goedkeuren">Goedkeuren</button>
+                        <button type="submit" name="afwijzen">Afwijzen</button>
+                    </form>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+
+        <div class="overlay" id="overlay">
+            <div class="overlay-content">
+                <h3>Boek Toevoegen</h3>
+                <form method="POST" enctype="multipart/form-data">
+                    <label for="titel">Titel:</label><br>
+                    <input type="text" id="titel" name="titel" required><br><br>
+
+                    <label for="auteur">Auteur:</label><br>
+                    <input type="text" id="auteur" name="auteur" required><br><br>
+
+                    <label for="categorie">Categorie:</label><br>
+                    <input type="text" id="categorie" name="categorie" required><br><br>
+
+                    <label for="aantal_beschikbaar">Aantal Beschikbaar:</label><br>
+                    <input type="number" id="aantal_beschikbaar" name="aantal_beschikbaar" min="0" required><br><br>
+
+                    <label for="beschrijving">Beschrijving:</label><br>
+                    <input type="text" id="beschrijving" name="beschrijving" placeholder="Voer een korte beschrijving in..." required><br><br>
+
+                    <label for="afbeelding">Afbeelding:</label><br>
+                    <div class="file-upload-wrapper">
+                        <input type="file" id="afbeelding" name="afbeelding" accept="image/*" required>
+                        <label for="afbeelding" class="file-upload-button"></label>
+                        <span class="file-name"></span>
+                    </div><br><br>
+
+                    <button type="submit" name="toevoegen">Toevoegen</button>
+                    <button type="button" onclick="closeOverlay()">Annuleren</button>
+                </form>
+            </div>
+        </div>
+
+        <h3>Boekenlijst</h3>
+        <button onclick="showOverlay()" name="toevoegen">Boek Toevoegen</button>
+        <ul>
+            <?php if (is_array($boeken) && !empty($boeken)): ?>
+                <?php foreach ($boeken as $boek): ?>
+                    <li>
+                        <span>
+                            Boek: <?= htmlspecialchars($boek['titel']) ?> - Auteur: <?= htmlspecialchars($boek['auteur']) ?> 
+                            - Categorie: <?= htmlspecialchars($boek['categorie']) ?> 
+                            - Beschikbaar: <?= htmlspecialchars($boek['aantal_beschikbaar']) ?>
+                        </span>
+                        <div>
+                            <form method="POST" style="display:inline;">
+                                <input type="hidden" name="boek_id" value="<?= $boek['id'] ?>">
+                                <input type="number" name="aantal_beschikbaar" value="<?= $boek['aantal_beschikbaar'] ?>" min="0" required>
+                                <button type="submit" name="wijzigen">Wijzigen</button>
+                            </form>
+                            <form method="POST" style="display:inline;">
+                                <input type="hidden" name="boek_id" value="<?= $boek['id'] ?>">
+                                <button type="submit" name="verwijderen" onclick="return confirm('Weet je zeker dat je dit boek wilt verwijderen?')">Verwijderen</button>
+                            </form>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <li>Geen boeken beschikbaar.</li>
+            <?php endif; ?>
+        </ul>
+
+        <h3>Logboek</h3>
+        <ul class="logbook">
+            <?php foreach ($logs as $log): ?>
+                <li><?= htmlspecialchars($log['tijdstip']) ?> - <?= htmlspecialchars($log['actie']) ?> (Reservering ID: <?= htmlspecialchars($log['reservering_id']) ?>)</li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+    
+    <a href="../uitloggen/uitloggen.php" class="logout-link">Uitloggen</a>
+
+    <script>
+        const overlay = document.getElementById("overlay");
+        const fileInput = document.getElementById("afbeelding");
+        const fileNameDisplay = document.querySelector(".file-name");
+
+        function showOverlay() {
+            overlay.style.display = "flex";
+            overlay.focus();
+        }
+
+        function closeOverlay() {
+            overlay.style.display = "none";
+        }
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && overlay.style.display === "flex") {
+                closeOverlay();
+            }
+        });
+
+        overlay.addEventListener("click", (e) => {
+            if (e.target === overlay) {
+                closeOverlay();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<?php
+session_start();
+include("../database.php");
+
+// CSRF-token genereren indien nodig
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Veilige token genereren
+}
+ 
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Controleer CSRF-token
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("CSRF-token komt niet overeen!");
+    }
+
+    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+    $wachtwoord = trim($_POST['wachtwoord']);
+    $remember = isset($_POST['remember']);
+
+    if (!empty($email) && !empty($wachtwoord)) {
+        try {
+            $conn = new PDO("mysql:host=localhost;dbname=bibliotheek", "root", "");
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            $stmt = $conn->prepare("SELECT id, wachtwoord, admin FROM users WHERE email = :email");
+            $stmt->bindParam(":email", $email);
+            $stmt->execute();
+
+            if ($stmt->rowCount() > 0) {
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                if (password_verify($wachtwoord, $row["wachtwoord"])) {
+                    $_SESSION["gebruiker_id"] = $row["id"];
+                    $_SESSION["admin"] = $row["admin"]; // Store admin status in session
+
+                    // Cookie instellen als "Inloggen behouden" is aangevinkt
+                    if ($remember) {
+                        setcookie("user_email", $email, time() + (30 * 24 * 60 * 60), "/");
+                    }
+
+                    // Redirect based on admin status
+                    if ($row["admin"] == 1) {
+                        header("Location: ../bestuurder/bestuurder.php");
+                    } else {
+                        header("Location: ../leerlingen/leerlingen.php");
+                    }
+                    exit();
+                } else {
+                    echo "<div class='php-result error'>Onjuist wachtwoord!</div>";
+                }
+            } else {
+                echo "<div class='php-result error'>Gebruiker niet gevonden!</div>";
+            }
+        } catch (PDOException $e) {
+            echo "<div class='php-result error'>Fout bij databaseverbinding: " . $e->getMessage() . "</div>";
+        }
+    } else {
+        echo "<div class='php-result error'>Vul alle velden correct in!</div>";
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bibliotheek Inloggen</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+<div class="form-container">
+    <h2>INLOGGEN</h2>
+    <form method="POST" action="">
+        <div class="form-group">
+            <input type="email" name="email" placeholder=" " required>
+            <label>E-mailadres</label>
+        </div>
+        <div class="form-group">
+            <input type="password" name="wachtwoord" placeholder=" " required>
+            <label>Wachtwoord</label>
+        </div>
+        <div class="form-group checkbox-container">
+            <input type="checkbox" name="remember" id="remember">
+            <label for="remember">Inloggen behouden</label>
+        </div>
+
+        <!-- Voeg de CSRF-token toe als een verborgen veld -->
+        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
+
+        <button type="submit" name="submit">INLOGGEN</button>
+        <a href="../aanmeldenscherm/aanmelden.php" class="btn-link">Nog geen account? Aanmelden</a>
+    </form>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const notification = document.querySelector('.php-result');
+        if (notification) {
+            setTimeout(() => {
+                notification.classList.add('hide');
+            }, 5000); // Trigger slide-out after 5 seconds
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+/* Algemene opmaak */
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #f4e8d1, #d9c2a6);
+    font-family: 'Georgia', serif;
+    color: #3c2f2f;
+    overflow: hidden;
+}
+
+/* Container voor de 404-content */
+.container {
+    text-align: center;
+    padding: 30px;
+    max-width: 700px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    animation: slideIn 1s ease-in-out;
+}
+
+/* 404-titel */
+.error-code {
+    font-size: 100px;
+    font-weight: bold;
+    color: #8b4513;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    margin: 0;
+    animation: shake 3s infinite;
+}
+
+/* Hoofdbericht */
+.message {
+    font-size: 28px;
+    margin: 20px 0;
+    color: #4a3728;
+}
+
+/* Subbericht */
+.sub-message {
+    font-size: 18px;
+    color: #6b4e31;
+    margin-bottom: 30px;
+    line-height: 1.5;
+}
+
+/* Knoppen */
+.btn {
+    display: inline-block;
+    padding: 12px 30px;
+    background-color: #8b4513;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 25px;
+    font-size: 16px;
+    margin: 10px;
+    transition: background-color 0.3s, transform 0.3s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn:hover {
+    background-color: #6b4e31;
+    transform: scale(1.05);
+}
+
+/* Secundaire knop */
+.btn.secondary {
+    background-color: #d4a373;
+}
+
+.btn.secondary:hover {
+    background-color: #b5895a;
+}
+
+/* Achtergrondelementen (boekenplank-effect) */
+.bg-bookshelf {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="0" y="80" width="100" height="20" fill="%238b4513"/><rect x="10" y="60" width="15" height="20" fill="%23d4a373"/><rect x="30" y="55" width="15" height="25" fill="%234a3728"/><rect x="50" y="65" width="15" height="15" fill="%23b5895a"/><rect x="70" y="50" width="15" height="30" fill="%236b4e31"/></svg>') repeat-x bottom;
+    opacity: 0.2;
+}
+
+/* Zwevende boeken */
+.book {
+    position: absolute;
+    font-size: 30px;
+    animation: floatBook 10s infinite;
+}
+
+.book:nth-child(1) {
+    top: 15%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.book:nth-child(2) {
+    top: 70%;
+    right: 15%;
+    animation-delay: 3s;
+}
+
+.book:nth-child(3) {
+    bottom: 20%;
+    left: 30%;
+    animation-delay: 6s;
+}
+
+/* Animaties */
+@keyframes slideIn {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes floatBook {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
+    50% { transform: translateY(-50px) rotate(5deg); opacity: 0.4; }
+    100% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
+}
+
+/* Responsief ontwerp */
+@media (max-width: 600px) {
+    .error-code {
+        font-size: 70px;
+    }
+
+    .message {
+        font-size: 22px;
+    }
+
+    .sub-message {
+        font-size: 16px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 14px;
+        margin: 5px;
+    }
+
+    .container {
+        padding: 20px;
+    }
+}

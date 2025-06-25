@@ -1,0 +1,481 @@
+/* leerlingen.css */
+/* Licentie: Transparent Textures (https://www.transparenttextures.com/terms.php) - Gratis te gebruiken voor persoonlijke en commerciële projecten, met vermelding van bron. */
+:root {
+    /* Colors */
+    --primary-bg: #f5e8d3;
+    --secondary-bg: #d4a373;
+    --text-dark: #2f1e0f;
+    --accent-dark: #3a2c1b;
+    --border-brown: #6b4e31;
+    --hover-brown: #8c6b47;
+    --item-bg: rgba(245, 235, 210, 0.95);
+    --unavailable-bg: rgba(242, 222, 222, 0.95);
+    --error-red: #a94442;
+    --error-hover: #c9302c;
+    --success-bg: rgba(230, 240, 224, 0.95);
+    --success-text: #3c763d;
+    --overlay-bg: rgba(47, 30, 15, 0.7);
+    --paper-bg: #faf0e6;
+
+    /* Fonts */
+    --font-primary: 'Times New Roman', serif;
+    --font-secondary: 'Book Antiqua', serif;
+
+    /* Shadows */
+    --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.15);
+    --shadow-medium: 0 6px 16px rgba(0, 0, 0, 0.2);
+    --shadow-dark: 0 10px 24px rgba(0, 0, 0, 0.2);
+
+    /* Transitions */
+    --transition-all: all 0.3s ease;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-primary);
+    background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%), 
+                url('https://www.transparenttextures.com/patterns/bookshelf.png');
+    background-blend-mode: overlay;
+    background-size: cover;
+    padding: 20px;
+    color: var(--text-dark);
+    line-height: 1.6;
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+}
+
+h2 {
+    color: var(--accent-dark);
+    text-align: center;
+    font-family: var(--font-secondary);
+    font-size: 2.5em;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 20px 0;
+    margin: 40px 0 60px;
+    border-bottom: 3px solid var(--border-brown);
+    animation: fadeInDown 1s ease-in-out;
+}
+
+h3 {
+    color: var(--accent-dark);
+    text-align: center;
+    font-family: var(--font-secondary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--border-brown);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    animation: fadeInDown 1s ease-in-out;
+}
+
+/* Titel voor reserveringen-popup */
+.reserveringen-popup h4 {
+    color: var(--accent-dark);
+    font-family: var(--font-secondary);
+    font-size: 1.3em;
+    text-align: center;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--border-brown);
+    padding-bottom: 5px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+li {
+    background: var(--item-bg) url('https://www.transparenttextures.com/patterns/paper.png');
+    background-blend-mode: overlay;
+    border: 1px solid var(--hover-brown);
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+    box-shadow: var(--shadow-light);
+    transition: var(--transition-all);
+    cursor: pointer;
+    animation: slideUp 0.5s ease-out forwards;
+}
+
+li:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: var(--shadow-dark);
+    border-color: var(--border-brown);
+}
+
+li.niet-beschikbaar {
+    background: var(--unavailable-bg) url('https://www.transparenttextures.com/patterns/paper.png');
+    border-color: var(--error-red);
+    color: var(--error-red);
+}
+
+.search-container {
+    max-width: 900px;
+    margin: 20px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    animation: fadeIn 1s ease-in;
+}
+
+#zoekbalk {
+    width: 100%;
+    max-width: 450px;
+    padding: 10px 12px;
+    border: 1px solid var(--hover-brown);
+    border-radius: 5px;
+    font-family: var(--font-primary);
+    font-size: 1em;
+    background: var(--paper-bg);
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: var(--transition-all);
+}
+
+#zoekbalk:focus {
+    border-color: var(--border-brown);
+    box-shadow: 0 0 10px rgba(107, 78, 49, 0.4);
+    transform: scale(1.01);
+}
+
+#reserveringen-knop {
+    background: var(--border-brown);
+    color: var(--primary-bg);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-family: var(--font-primary);
+    font-size: 1em;
+    cursor: pointer;
+    transition: var(--transition-all);
+    box-shadow: var(--shadow-light);
+    white-space: nowrap;
+}
+
+#reserveringen-knop:hover {
+    background: var(--hover-brown);
+    transform: scale(1.05);
+    box-shadow: var(--shadow-medium);
+}
+
+button, input[type="submit"] {
+    background: var(--border-brown);
+    color: var(--primary-bg);
+    border: none;
+    padding: 8px 15px;
+    margin: 5px;
+    border-radius: 5px;
+    font-family: var(--font-primary);
+    font-size: 1em;
+    cursor: pointer;
+    transition: var(--transition-all);
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+}
+
+button:hover, input[type="submit"]:hover {
+    background: var(--hover-brown);
+    transform: scale(1.05);
+    box-shadow: var(--shadow-medium);
+}
+
+button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease, height 0.4s ease;
+}
+
+button:hover::after {
+    width: 200%;
+    height: 200%;
+}
+
+li.niet-beschikbaar button, li.niet-beschikbaar input[type="submit"] {
+    background: var(--error-red);
+    color: var(--primary-bg);
+}
+
+li.niet-beschikbaar button:hover, li.niet-beschikbaar input[type="submit"]:hover {
+    background: var(--error-hover);
+}
+
+.melding {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 15px 20px;
+    width: 300px;
+    background-color: var(--success-bg);
+    color: var(--success-text);
+    border: 1px solid #c7e1bc;
+    border-radius: 8px;
+    box-shadow: var(--shadow-light);
+    font-family: var(--font-primary);
+    font-size: 1.1em;
+    z-index: 111;
+    animation: slideInLeft 0.5s ease-in forwards, fadeOut 0.5s ease-out 3s forwards;
+}
+
+.melding.error {
+    background-color: var(--unavailable-bg);
+    color: var(--error-red);
+    border: 1px solid #ebccd1;
+}
+
+.melding::before {
+    content: '✉';
+    margin-right: 10px;
+    font-size: 1.2em;
+}
+
+.overlay, #popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--overlay-bg);
+    z-index: 999;
+    cursor: pointer;
+    animation: fadeIn 0.5s ease;
+}
+
+.overlay-content, #popup {
+    background: var(--paper-bg) url('https://www.transparenttextures.com/patterns/paper.png');
+    background-blend-mode: overlay;
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid var(--border-brown);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+    width: 90%;
+    max-width: 450px;
+    margin: 0 auto;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pageTurn 0.8s ease-out;
+    cursor: default;
+}
+
+.overlay input, .overlay input[type="date"] {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid var(--hover-brown);
+    border-radius: 5px;
+    font-family: var(--font-primary);
+    transition: border-color 0.3s ease;
+}
+
+.overlay input:focus, .overlay input[type="date"]:focus {
+    border-color: var(--border-brown);
+}
+
+.overlay-content button, #popup button {
+    padding: 10px 20px;
+    font-size: 1.1em;
+    background: var(--border-brown);
+    color: var(--primary-bg);
+    border-radius: 5px;
+    transition: var(--transition-all);
+    box-shadow: var(--shadow-light);
+}
+
+.overlay-content button:hover, #popup button:hover {
+    background: var(--hover-brown);
+    transform: scale(1.05);
+    box-shadow: var(--shadow-medium);
+}
+
+#popup {
+    z-index: 1001;
+    text-align: center;
+    display: none;
+}
+
+#popup img {
+    max-width: 200px;
+    height: auto;
+    border: 3px solid var(--hover-brown);
+    border-radius: 5px;
+    margin: 0 auto 15px;
+    display: block;
+    transition: transform 0.3s ease;
+    animation: imageFadeIn 0.8s ease-in;
+}
+
+#popup img:hover {
+    transform: scale(1.05);
+}
+
+#popup button {
+    margin-top: 10px;
+    background: var(--error-red);
+}
+
+#popup button:hover {
+    background: var(--error-hover);
+}
+
+#uitloggen {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    background: var(--border-brown);
+    color: var(--primary-bg);
+    text-decoration: none;
+    border-radius: 5px;
+    font-family: var(--font-primary);
+    font-size: 1.2em;
+    font-weight: bold;
+    box-shadow: var(--shadow-light);
+    transition: var(--transition-all);
+    z-index: 100;
+}
+
+#uitloggen:hover {
+    background: var(--hover-brown);
+    transform: scale(1.05);
+    box-shadow: var(--shadow-medium);
+}
+
+/* Verbeterde reserveringen-popup */
+.reserveringen-popup {
+    display: none;
+    position: fixed;
+    width: 350px;
+    max-height: 250px;
+    background: var(--paper-bg) url('https://www.transparenttextures.com/patterns/paper.png');
+    background-blend-mode: overlay;
+    border: 2px solid var(--border-brown);
+    border-radius: 10px;
+    padding: 15px;
+    overflow-y: auto;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+    z-index: 1000;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: fadeInPopup 0.3s ease-in;
+}
+
+.reserveringen-popup ul {
+    margin: 0;
+    padding: 0;
+}
+
+.reserveringen-popup li {
+    background: none;
+    border: none;
+    padding: 8px 0;
+    margin: 5px 0;
+    box-shadow: none;
+    cursor: default;
+    font-size: 1em;
+    color: var(--text-dark);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.reserveringen-popup li button {
+    background: var(--error-red);
+    padding: 5px 10px;
+    font-size: 0.9em;
+}
+
+.reserveringen-popup li button:hover {
+    background: var(--error-hover);
+}
+
+/* Animaties */
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pageTurn {
+    0% { transform: translate(-50%, -50%) rotateY(-90deg); opacity: 0; }
+    100% { transform: translate(-50%, -50%) rotateY(0); opacity: 1; }
+}
+
+@keyframes imageFadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-100px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes fadeInPopup {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    h2 { font-size: 2em; margin: 30px 0 40px; }
+    h3 { font-size: 1.5em; }
+    li { padding: 12px; margin: 10px 0; }
+    #zoekbalk { max-width: 350px; }
+    #reserveringen-knop { padding: 8px 15px; }
+    button, input[type="submit"] { padding: 6px 12px; font-size: 0.9em; }
+    .overlay-content, #popup { width: 85%; padding: 15px; }
+    #popup img { max-width: 150px; }
+    .melding { width: 250px; }
+    #uitloggen { padding: 8px 15px; font-size: 1em; }
+    .reserveringen-popup { width: 300px; }
+}
+
+@media (max-width: 480px) {
+    body { padding: 10px; }
+    h2 { font-size: 1.8em; margin: 20px 0 30px; }
+    h3 { font-size: 1.2em; }
+    li { padding: 10px; font-size: 0.9em; }
+    .search-container { flex-direction: column; gap: 10px; }
+    #zoekbalk { max-width: 300px; padding: 8px 10px; font-size: 0.9em; }
+    #reserveringen-knop { padding: 8px 15px; font-size: 0.9em; }
+    button, input[type="submit"] { padding: 5px 10px; font-size: 0.85em; }
+    .overlay-content, #popup { width: 90%; padding: 10px; }
+    #popup img { max-width: 120px; }
+    .melding { width: 200px; }
+    #uitloggen { padding: 6px 12px; font-size: 0.9em; }
+    .reserveringen-popup { width: 90%; max-height: 200px; }
+}

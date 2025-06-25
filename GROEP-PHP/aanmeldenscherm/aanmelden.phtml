@@ -1,0 +1,122 @@
+<?php
+// Start sessie en genereer een nieuwe CSRF-token
+session_start();
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Veilige token genereren
+}
+
+include("../database.php");
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Controleer CSRF-token
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("CSRF-token komt niet overeen!");
+    }
+
+    $naam = trim($_POST['naam']);
+    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+    $klas = trim($_POST['Klas']);
+    $geboorte = $_POST['Geboorte-Datum'];
+    $wachtwoord = trim($_POST['wachtwoord']);
+    $bevestig_wachtwoord = trim($_POST['bevestig_wachtwoord']);
+    $admin = 0; // Default to non-admin
+
+    // Check if all fields are filled
+    if (!empty($naam) && !empty($email) && !empty($klas) && !empty($geboorte) && !empty($wachtwoord) && !empty($bevestig_wachtwoord)) {
+        // Check if passwords match
+        if ($wachtwoord !== $bevestig_wachtwoord) {
+            echo "<div class='php-result error'>Wachtwoorden komen niet overeen!</div>";
+        } else {
+            try {
+                $conn = new PDO("mysql:host=localhost;dbname=bibliotheek", "root", "");
+                $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                // Controleer of e-mail al bestaat
+                $stmt = $conn->prepare("SELECT id FROM users WHERE email = :email");
+                $stmt->bindParam(":email", $email);
+                $stmt->execute();
+
+                if ($stmt->rowCount() > 0) {
+                    echo "<div class='php-result error'>E-mailadres is al in gebruik!</div>";
+                } else {
+                    // Hash het wachtwoord
+                    $hashed_wachtwoord = password_hash($wachtwoord, PASSWORD_DEFAULT);
+
+                    // Voeg nieuwe user toe
+                    $stmt = $conn->prepare("INSERT INTO users (naam, email, Klas, Geboorte, wachtwoord, admin) VALUES (:naam, :email, :klas, :geboorte, :wachtwoord, :admin)");
+                    $stmt->bindParam(":naam", $naam);
+                    $stmt->bindParam(":email", $email);
+                    $stmt->bindParam(":klas", $klas);
+                    $stmt->bindParam(":geboorte", $geboorte);
+                    $stmt->bindParam(":wachtwoord", $hashed_wachtwoord);
+                    $stmt->bindParam(":admin", $admin, PDO::PARAM_INT);
+                    $stmt->execute();
+
+                    echo "<div class='php-result success'>Aanmelding succesvol! Je kunt nu inloggen.</div>";
+                }
+            } catch (PDOException $e) {
+                echo "<div class='php-result error'>Fout bij databaseverbinding: " . $e->getMessage() . "</div>";
+            }
+        }
+    } else {
+        echo "<div class='php-result error'>Vul alle velden correct in!</div>";
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bibliotheek Aanmelden</title>
+    <link rel="stylesheet" href="aanmelden.css">
+</head>
+<body>
+<div class="form-container">
+    <h2>AANMELDEN</h2>
+    <form method="POST" action="">
+        <div class="form-group">
+            <input type="text" name="naam" placeholder=" " required>
+            <label>Volledige naam</label>
+        </div>
+        <div class="form-group">
+            <input type="email" name="email" placeholder=" " required>
+            <label>E-mailadres</label>
+        </div>
+        <div class="form-group">
+            <input type="text" name="Klas" placeholder=" " required>
+            <label>Klas</label>
+        </div>
+        <div class="form-group">
+            <input type="date" name="Geboorte-Datum" placeholder=" " required>
+            <label>Geboorte Datum</label>
+        </div>
+        <div class="form-group">
+            <input type="password" name="wachtwoord" placeholder=" " required>
+            <label>Wachtwoord</label>
+        </div>
+        <div class="form-group">
+            <input type="password" name="bevestig_wachtwoord" placeholder=" " required>
+            <label>Bevestig wachtwoord</label>
+        </div>
+
+        <!-- Voeg de CSRF-token toe als een verborgen veld -->
+        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
+
+        <button type="submit" name="submit">Aanmelden</button>
+        <a href="../inlogscherm/login.php" class="btn-link">Al een account? Inloggen</a>
+    </form>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const notification = document.querySelector('.php-result');
+        if (notification) {
+            setTimeout(() => {
+                notification.classList.add('hide');
+            }, 5000); // Trigger slide-out after 5 seconds
+        }
+    });
+</script>
+</body>
+</html>
